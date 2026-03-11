@@ -1,65 +1,197 @@
-import Image from "next/image";
+"use client";
+
+import { useMemo, useState } from "react";
+import { AgGridReact } from "ag-grid-react";
+import {
+  ColDef,
+  ModuleRegistry,
+  ClientSideRowModelModule,
+  RowSelectionModule,
+  RowSelectionOptions,
+  SelectionColumnDef,
+  themeQuartz,
+} from "ag-grid-community";
+
+// Register the required modules for Client-side Row Model and Selection
+ModuleRegistry.registerModules([ClientSideRowModelModule, RowSelectionModule]);
 
 export default function Home() {
+  // Dummy data expanded to 10 rows with 10 fields
+  const [rowData, setRowData] = useState([
+    {
+      id: "101",
+      name: "John Doe",
+      email: "john@example.com",
+      age: 28,
+      phone: "555-0101",
+      country: "USA",
+      city: "New York",
+      department: "Engineering",
+      role: "Developer",
+      status: "Active",
+    },
+    {
+      id: "102",
+      name: "Jane Smith",
+      email: "jane.smith@foo.com",
+      age: 34,
+      phone: "555-0102",
+      country: "UK",
+      city: "London",
+      department: "Design",
+      role: "UI/UX",
+      status: "Active",
+    },
+    {
+      id: "103",
+      name: "Sam Johnson",
+      email: "sam.j@test.org",
+      age: 41,
+      phone: "555-0103",
+      country: "Canada",
+      city: "Toronto",
+      department: "Sales",
+      role: "Manager",
+      status: "Inactive",
+    },
+    {
+      id: "104",
+      name: "Anna Lee",
+      email: "anna@example.com",
+      age: 29,
+      phone: "555-0104",
+      country: "Australia",
+      city: "Sydney",
+      department: "Marketing",
+      role: "Specialist",
+      status: "Active",
+    },
+    {
+      id: "105",
+      name: "Mike Davis",
+      email: "mike.d@foo.com",
+      age: 45,
+      phone: "555-0105",
+      country: "USA",
+      city: "Chicago",
+      department: "Engineering",
+      role: "Lead",
+      status: "Active",
+    },
+    {
+      id: "106",
+      name: "Linda Brown",
+      email: "linda@test.org",
+      age: 32,
+      phone: "555-0106",
+      country: "Germany",
+      city: "Berlin",
+      department: "HR",
+      role: "Manager",
+      status: "Active",
+    },
+    {
+      id: "107",
+      name: "David Wilson",
+      email: "david.w@example.com",
+      age: 39,
+      phone: "555-0107",
+      country: "UK",
+      city: "Manchester",
+      department: "Engineering",
+      role: "QA Engineer",
+      status: "Inactive",
+    },
+    {
+      id: "108",
+      name: "Chloe Taylor",
+      email: "chloe@foo.com",
+      age: 26,
+      phone: "555-0108",
+      country: "USA",
+      city: "Austin",
+      department: "Design",
+      role: "Graphic Designer",
+      status: "Active",
+    },
+    {
+      id: "109",
+      name: "Robert Anderson",
+      email: "robert@example.com",
+      age: 48,
+      phone: "555-0109",
+      country: "Canada",
+      city: "Vancouver",
+      department: "Finance",
+      role: "Analyst",
+      status: "Active",
+    },
+    {
+      id: "110",
+      name: "Sophia Martinez",
+      email: "sophia@test.org",
+      age: 31,
+      phone: "555-0110",
+      country: "Spain",
+      city: "Madrid",
+      department: "Marketing",
+      role: "Manager",
+      status: "Active",
+    },
+  ]);
+
+  // Expanded to 10 data columns
+  const [columnDefs, setColumnDefs] = useState<ColDef[]>([
+    { field: "id", filter: true, minWidth: 100 },
+    { field: "name", filter: true, minWidth: 150 },
+    { field: "email", filter: true, minWidth: 200 },
+    { field: "age", filter: "agNumberColumnFilter", maxWidth: 100 },
+    { field: "phone", filter: true, minWidth: 130 },
+    { field: "country", filter: true, minWidth: 120 },
+    { field: "city", filter: true, minWidth: 120 },
+    { field: "department", filter: true, minWidth: 150 },
+    { field: "role", filter: true, minWidth: 150 },
+    { field: "status", filter: true, minWidth: 100 },
+  ]);
+
+  // Global column definition options
+  const defaultColDef = useMemo<ColDef>(() => {
+    return {
+      sortable: true,
+      flex: 1,
+      minWidth: 120,
+    };
+  }, []);
+
+  // Use the new v35 row selection configuration
+  const rowSelection = useMemo<RowSelectionOptions>(() => {
+    return {
+      mode: "multiRow",
+    };
+  }, []);
+
+  // Configure the built-in selection column to be strictly pinned to the left
+  const selectionColumnDef = useMemo<SelectionColumnDef>(() => {
+    return {
+      pinned: "left",
+      width: 50,
+      suppressHeaderMenuButton: true,
+    };
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div style={{ padding: "2rem", height: "100vh", width: "100%" }}>
+      <h2>AG Grid Example</h2>
+      <div style={{ height: "60vh", width: "100%" }}>
+        <AgGridReact
+          rowData={rowData}
+          columnDefs={columnDefs}
+          defaultColDef={defaultColDef}
+          rowSelection={rowSelection}
+          selectionColumnDef={selectionColumnDef}
+          theme={themeQuartz}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
