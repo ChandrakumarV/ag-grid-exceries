@@ -8,12 +8,19 @@ import {
   ModuleRegistry,
   ClientSideRowModelModule,
   RowSelectionModule,
+  PinnedRowModule,
+  ValidationModule,
   themeQuartz,
 } from "ag-grid-community";
 import { data } from "@/data";
 
 // Register the required modules
-ModuleRegistry.registerModules([ClientSideRowModelModule, RowSelectionModule]);
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+  RowSelectionModule,
+  PinnedRowModule,
+  ValidationModule,
+]);
 
 const names = [
   "APPA",
@@ -63,19 +70,51 @@ const dates = [
 export default function Home() {
   const [rowData] = useState(data);
 
+  const pinnedBottomRowData = useMemo(() => {
+    const totals: any = {
+      sno: undefined,
+      name: "Total Liters",
+    };
+
+    let grandTotal = 0;
+    dates.forEach((_, index) => {
+      const fieldM = `d${index}_m`;
+      const fieldE = `d${index}_e`;
+
+      const sumM = rowData.reduce(
+        (acc, row: any) => acc + parseFloat(row[fieldM] || "0"),
+        0,
+      );
+      const sumE = rowData.reduce(
+        (acc, row: any) => acc + parseFloat(row[fieldE] || "0"),
+        0,
+      );
+
+      totals[fieldM] = sumM.toFixed(2);
+      totals[fieldE] = sumE.toFixed(2);
+      grandTotal += sumM + sumE;
+    });
+
+    // Explicitly set the total for the pinned row if needed,
+    // although valueGetter should handle it, this ensures it's correct.
+    totals.total = grandTotal.toFixed(2);
+
+    return [totals];
+  }, [rowData]);
+
   const dateColumns: ColGroupDef[] = dates.map((date, index) => ({
     headerName: date,
     children: [
       {
         field: `d${index}_m`,
         headerName: "M",
-        width: 65,
+        width: 85,
         valueFormatter: (p) => (p.value ? `${p.value} L` : "-"),
       },
       {
         field: `d${index}_e`,
         headerName: "E",
-        width: 65,
+        width: 85,
         valueFormatter: (p) => (p.value ? `${p.value} L` : "-"),
       },
     ],
@@ -98,7 +137,7 @@ export default function Home() {
     {
       headerName: "Total",
       pinned: "right",
-      width: 100,
+      width: 120,
       valueGetter: (p: any) => {
         if (!p.data) return "0.00";
         let total = 0;
@@ -146,6 +185,7 @@ export default function Home() {
               pinned: "left",
               width: 32,
             }}
+            pinnedBottomRowData={pinnedBottomRowData}
           />
         </div>
       </div>
