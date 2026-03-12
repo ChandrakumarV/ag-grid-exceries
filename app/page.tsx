@@ -142,6 +142,10 @@ export default function Home() {
               fontSize: 12,
             })}
             rowSelection={{ mode: "multiRow" }}
+            selectionColumnDef={{
+              pinned: "left",
+              width: 32,
+            }}
           />
         </div>
       </div>
